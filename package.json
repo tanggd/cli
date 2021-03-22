@@ -1,0 +1,28 @@
+{
+  "name": "@tang/cli",
+  "version": "1.0.0",
+  "description": "cli",
+  "main": "index.js",
+  "bin": {
+    "tang": "./bin/tang.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tanggd/cli.git"
+  },
+  "keywords": [
+    "cli"
+  ],
+  "author": "tanggd",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tanggd/cli/issues"
+  },
+  "homepage": "https://github.com/tanggd/cli#readme",
+  "dependencies": {
+    "commander": "^7.2.0"
+  }
+}

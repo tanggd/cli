@@ -123,7 +123,7 @@ npm unlink发现删除不了，不知道为什么，TODO待解决，或者手动
 
 ## 命令行交互
 
-vue create project 会出现很多交互式的操作，接下来我们也实现这个交互式的操作。
+vue create [projectName] 会出现很多交互式的操作，接下来我们也实现这个交互式的操作。
 
 思路分析：
 
@@ -158,19 +158,185 @@ program.parse(process.argv)
 此时我们输入命令：tang --help 便可以看见
 
 ```bash
-C:\Users\tanggd\Desktop\github\cli> tang --help
+$ tang --help
 Usage: tang [options]
 
 Options:
   -h, --help  display help for command
 ```
 
+是不是似曾相识的感觉？
+
+### 配置版本查看
+
+```javascript
+#! /usr/bin/env node
+
+const { program } = require('commander')
+const pkg = require('../package.json')
+
+program
+  .version(`tang-cli@${pkg.version}`)
+  .usage(`<command> [option]`)
+
+program.parse(process.argv)
+```
+
+此时我们输入命令：tang -V
+
+```bash
+$ tang -V
+tang-cli@1.0.0
+```
+
+### 配置创建项目
+
+```javascript
+#! /usr/bin/env node
+
+const { program } = require('commander')
+const pkg = require('../package.json')
+
+// 配置创建项目 tang create app
+program
+  // 表示tang命令后的第一个参数是create时，会走这里的逻辑
+  .command('create <app-name>')
+  // 命令描述
+  .description('Create a new project')
+  // 配置选项，配置tang create app后面的参数，
+  // option第一个参数是字符串，(其中逗号是简写、逗号后是全写)
+  .option('-f, --force', 'If the target file exists, force it to be overwritten')
+  .action((name, option) => {
+    // 在此处写命令的逻辑
+    console.log(name, option)
+    // name 就是 <app-name>； option 是个对象
+    // 若是 tang create app，则是打印 app {}
+    // 若是 tang create --force，则是打印 app {force: true}
+    // 若是 tang create -f，则是打印 app {force: true}
+  })
+
+
+program
+  .version(`tang-cli@${pkg.version}`)
+  .usage(`<command> [option]`)
+
+program.parse(process.argv)
+```
+
+执行命令
+
+```bash
+$ tang create app
+app {}
+
+$ tang create app --force
+app { force: true }
+
+$ tang create app -f
+app { force: true }
+```
+
+
+
+### 配置config
+
+```javascript
+// 配置文件相关，查看、设置、删除
+program
+  .command('config [value]')
+  .description('inspect and modify the config')
+  .option('-g, --get <path>', 'get value from option')
+  .option('-s, --set <path> <value>', 'set option value')
+  .option('-d, --delete <path>', 'delete option from config')
+  .option('-e, --edit', 'open config with default editor')
+  .option('--json', 'outputs JSON result only')
+  .action((value, options) => {
+    console.log(value, options)
+  })
+```
+
+执行命令
+
+```bash
+$ tang config --set name xiaotang
+xiaotang { set: 'name' }
+
+$ tang config --get name
+undefined { get: 'name' }
+
+$ tang config --delete name
+undefined { delete: 'name' }
+```
+
+基本上就是需要什么命令就配置什么命令
+
+### 配置--help
+
+```javascript
+// --help  对命令的help
+program
+  .on('--help', () => {
+    console.log()
+    console.log('Run tang <command> --help for detailed usage of given command')
+    console.log()
+  })
+```
+
+执行命令
+
+```bash
+$ tang create --help
+Usage: tang create [options] <app-name>
+
+Create a new project
+
+Options:
+  -f, --force  If the target file exists, force it to be overwritten
+  -h, --help   display help for command
+
+
+$ tang config --help
+Usage: tang config [options] [value]
+
+View config, or modify config, or set config
+
+Options:
+  -g, --get <key>          Get key value
+  -s, --set <key> <value>  Set key value
+  -d, --delete <key>       Delete key value
+  -h, --help               display help for command
+```
+
+
+
+
+
+## 提示着色
+
+安装chalk
+
+```bash
+npm install chalk
+```
+
+使用
+
+```javascript
+const chalk = require('chalk')
+console.log(`Run ${chalk.cyan('tang <command> --help')} for detailed usage of given command`)
+```
+
+更多[chalk](https://github.com/chalk/chalk)相关的颜色方法查看其github文档。
+
 
 
 ## 参考资料
 
 - [commander](https://github.com/tj/commander.js)
-- 1-23
+- [chalk](https://github.com/chalk/chalk)
+- fs-extra
+- [inquirer](https://github.com/SBoudrias/Inquirer.js)
+- 
 
 
 

@@ -102,3 +102,9 @@ dist
 
 # TernJS port file
 .tern-port
+
+
+# 我增加的
+demo/
+yarn.lock
+package-lock.json
